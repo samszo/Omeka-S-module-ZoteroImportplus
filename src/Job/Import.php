@@ -622,7 +622,6 @@ class Import extends AbstractJob
                 }
                 //création du tag
                 $result = $this->api->create('items', $oItem, [], ['continueOnError' => true])->getContent();
-                $this->logger->info("Tag ajouté ".$oIds[$i]->id().' '.$oIds[$i]->displayTitle());            
                 $oTags[] = $result;
                 $importItem = [
                     'o:item' => ['o:id' => $oTags[$i]->id()],
@@ -706,7 +705,7 @@ class Import extends AbstractJob
         //$this->logger->info("RECHERCHE COUNT = ".count($result));
         if(count($result)){
             $this->persons[$name]['id']=$result[0]->id();
-            $this->api->update('items', $this->persons[$name]['id'], $this->persons[$name]['item'], [], ['continueOnError' => true,'isPartial'=>1, 'collectionAction' => 'append']);
+            $this->api->update('items', $this->persons[$name]['id'], $this->persons[$name]['item'], [], ['continueOnError' => true,'isPartial'=>1, 'collectionAction' => 'replace']);
         }else{
             $result = $this->api->create('items', $this->persons[$name]['item'], [], ['continueOnError' => true])->getContent();
             $this->persons[$name]['id']=$result->id();
