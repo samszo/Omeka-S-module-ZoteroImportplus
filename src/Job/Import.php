@@ -37,7 +37,7 @@ class Import extends AbstractJob
         'skos'      => 'http://www.w3.org/2004/02/skos/core#',
         'foaf'      => 'http://xmlns.com/foaf/0.1/',
         'oa'        => 'http://www.w3.org/ns/oa#',        
-        'jdc'       => 'https://jardindesconnaissances.univ-paris8.fr/onto/jdc#',        
+        'jdc'       => 'https://jardindesconnaissances.univ-paris8.fr/onto/',        
         'schema'    => 'http://schema.org/',
         'rdf'       => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
         'cito'      => 'http://purl.org/spar/cito',         
@@ -448,7 +448,7 @@ class Import extends AbstractJob
             $this->logger->info('Item mis à jour = '.$id);
             //$this->logger->info('UPDATE RESULT = \n'.json_encode($response));
             
-            // Batch create Zotero import items.
+            //Batch create Zotero import items.
             $zKey = $oItemChunk['dcterms:isReferencedBy'][0]['@value'];
             $importItem = [
                     'o:item' => ['o:id' => $id],
@@ -464,6 +464,7 @@ class Import extends AbstractJob
             if(isset($noteItems[$zKey])){
                 $noteItems[$zKey]=$noteItems[$zKey];
             }
+            
             //enregistre l'item de l'item pour les notes et les tags
             $oItems[$zKey]=$this->api->read('items', $id)->getContent();
 
@@ -481,6 +482,7 @@ class Import extends AbstractJob
         $propIsPart = $this->properties["dcterms"]["isPartOf"];
         //$this->logger->info('noteItemsParent = '.json_encode($noteItemsParent));
         //$this->logger->info('noteItems = '.json_encode($noteItems));
+        //$this->logger->info('oItems = '.json_encode($oItems));
         foreach ($noteItemsParent as $zKeyP => $itemP) {
             $idP = $itemP['oid'];
             foreach ($itemP['items'] as $zKey) {
@@ -501,7 +503,7 @@ class Import extends AbstractJob
 
 
         //création des annotations pour chaque tags de chaque items
-        $this->logger->info('tags = '.json_encode($this->tags));
+        //$this->logger->info('tags = '.json_encode($this->tags));
         foreach ($this->tags as $tag) {
             $oTags = $this->ajouteTag($tag);     
             //création des relations avec les items
@@ -622,7 +624,6 @@ class Import extends AbstractJob
                 }
                 //création du tag
                 $result = $this->api->create('items', $oItem, [], ['continueOnError' => true])->getContent();
-                $this->logger->info("Tag ajouté ".$oIds[$i]->id().' '.$oIds[$i]->displayTitle());            
                 $oTags[] = $result;
                 $importItem = [
                     'o:item' => ['o:id' => $oTags[$i]->id()],
@@ -706,7 +707,7 @@ class Import extends AbstractJob
         //$this->logger->info("RECHERCHE COUNT = ".count($result));
         if(count($result)){
             $this->persons[$name]['id']=$result[0]->id();
-            $this->api->update('items', $this->persons[$name]['id'], $this->persons[$name]['item'], [], ['continueOnError' => true,'isPartial'=>1, 'collectionAction' => 'append']);
+            $this->api->update('items', $this->persons[$name]['id'], $this->persons[$name]['item'], [], ['continueOnError' => true,'isPartial'=>1, 'collectionAction' => 'replace']);
         }else{
             $result = $this->api->create('items', $this->persons[$name]['item'], [], ['continueOnError' => true])->getContent();
             $this->persons[$name]['id']=$result->id();

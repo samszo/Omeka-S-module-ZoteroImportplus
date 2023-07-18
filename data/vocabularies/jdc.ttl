@@ -4,10 +4,10 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vs: <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
 @prefix o: <http://omeka.org/s/vocabs/o#> .
-@prefix jdc: <https://jardindesconnaissances.univ-paris8.fr/onto/jdc#> .
+@prefix jdc: <https://jardindesconnaissances.univ-paris8.fr/onto/> .
 @prefix ma: <http://www.w3.org/ns/ma-ont#>.
 
-<https://jardindesconnaissances.univ-paris8.fr/onto/jdc#> a owl:Ontology ;
+<https://jardindesconnaissances.univ-paris8.fr/onto/> a owl:Ontology ;
     dcterms:title "Jardin des connaissances" .
 
 jdc:SemanticPosition a rdfs:Class ;

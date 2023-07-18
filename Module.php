@@ -11,6 +11,7 @@ if (!class_exists(\Generic\AbstractModule::class)) {
 use Laminas\EventManager\Event;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\ModuleManager\ModuleManager;
 use Generic\AbstractModule;
 
 
