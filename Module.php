@@ -2,23 +2,27 @@
 namespace ZoteroImportplus;
 
 
-if (!class_exists(\Generic\AbstractModule::class)) {
-    require file_exists(dirname(__DIR__) . '/Generic/AbstractModule.php')
-        ? dirname(__DIR__) . '/Generic/AbstractModule.php'
-        : __DIR__ . '/src/Generic/AbstractModule.php';
+if (!class_exists(\Common\TraitModule::class)) {
+    require_once dirname(__DIR__) . '/Common/TraitModule.php';
 }
 
 use Laminas\EventManager\Event;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\ModuleManager\ModuleManager;
-use Generic\AbstractModule;
+use Common\TraitModule;
+use Omeka\Module\AbstractModule;
 
 
 class Module extends AbstractModule
 {
+    use TraitModule;
     const NAMESPACE = __NAMESPACE__;
-   
+
+    protected $dependencies = [
+        'Common'
+    ];
+
 
     public function getConfig()
     {
@@ -28,28 +32,21 @@ class Module extends AbstractModule
 
     protected function preInstall(): void
     {
-        //vérifie les dépendances
         $services = $this->getServiceLocator();
-        $module = $services->get('Omeka\ModuleManager')->getModule('Generic');
-        if ($module && version_compare($module->getIni('version'), '3.3.26', '<')) {
-            $translator = $services->get('MvcTranslator');
+        $translate = $services->get('ControllerPluginManager')->get('translate');
+        $translator = $services->get('MvcTranslator');
+
+        if (!method_exists($this, 'checkModuleActiveVersion') || !$this->checkModuleActiveVersion('Common', '3.4.66')) {
             $message = new \Omeka\Stdlib\Message(
-                $translator->translate('This module requires the module "%s", version %s or above.'), // @translate
-                'Generic', '3.3.26'
+                $translate('The module %1$s should be upgraded to version %2$s or later.'), // @translate
+                'Common', '3.4.66'
             );
-            throw new \Omeka\Module\Exception\ModuleCannotInstallException($message);
-        }
-        $module = $services->get('Omeka\ModuleManager')->getModule('Annotate');
-        if ($module && version_compare($module->getIni('version'), '3.3', '<')) {
-            $translator = $services->get('MvcTranslator');
-            $message = new \Omeka\Stdlib\Message(
-                $translator->translate('This module requires the module "%s", version %s or above.'), // @translate
-                'Annotate', '3.3'
-            );
-            throw new \Omeka\Module\Exception\ModuleCannotInstallException($message);
+            throw new \Omeka\Module\Exception\ModuleCannotInstallException((string) $message);
         }
 
+        $this->getManageModuleAndResources();
     }
+
     protected function postUninstall(): void
     {
         $services = $this->getServiceLocator();

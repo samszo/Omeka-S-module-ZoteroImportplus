@@ -37,7 +37,7 @@ class Import extends AbstractJob
         'skos'      => 'http://www.w3.org/2004/02/skos/core#',
         'foaf'      => 'http://xmlns.com/foaf/0.1/',
         'oa'        => 'http://www.w3.org/ns/oa#',        
-        'jdc'       => 'https://jardindesconnaissances.univ-paris8.fr/onto/',        
+        'jdc'       => 'https://jardindesconnaissances.univ-paris8.fr/onto/jdc#',        
         'schema'    => 'http://schema.org/',
         'rdf'       => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
         'cito'      => 'http://purl.org/spar/cito',         
@@ -369,7 +369,30 @@ class Import extends AbstractJob
                 $valueObject['property_id'] = $this->properties["cito"]["isCompiledBy"]->id();
                 $valueObject['value_resource_id'] = $this->actant[$zItemGroup['meta']['createdByUser']['username']]->id()."";
                 $valueObject['type'] = 'resource';
-                $oItem[$this->properties["cito"]["isCompiledBy"]->term()][] = $valueObject;    
+                $oItem[$this->properties["cito"]["isCompiledBy"]->term()][] = $valueObject;
+                //recherche l'item original pour avoir les attachments et les annotations
+                $urlGroup = $this->url;
+                $this->url = new Url('users', $zItemGroup['meta']['createdByUser']['id']);
+                $urlItemOri = $this->url->itemSearch(['q'=>$zItemGroup['data']['title']]);
+                $this->logger->info('urlItemOri='.$urlItemOri);
+                $zItemsGroupOri = json_decode($this->getResponse($urlItemOri)->getBody(),true);
+                foreach ($zItemsGroupOri as $itemOri) {
+                    //vérifie que l'item est bien lié au groupe
+                    if($itemOri['data']['relations']["owl:sameAs"]=="http://zotero.org/groups/".$zItemGroup["library"]["id"]."/items/".$zItemGroup["key"]){
+                        //vérifie si l'item a des enfants
+                        if(isset($itemOri['meta']["numChildren"])){
+                            //récupération des attachments de l'item original
+                            $urlItemChild = $this->url->itemChild($itemOri['key']);
+                            $this->logger->info('urlItemChild='.$urlItemChild);
+                            $zItemOriChild = json_decode($this->getResponse($urlItemChild)->getBody(),true);
+                            foreach ($zItemOriChild as $zChildItem) {
+                                $oItem = $this->mapAttachment($zChildItem, $oItem);
+                            }                  
+                        }
+                    }
+                }
+                //réfinie l'url comme défini à l'import
+                $this->url = $urlGroup;
             }
     
             //vérifie la présence de l'item pour gérer les mises à jour
@@ -1141,7 +1164,7 @@ class Import extends AbstractJob
             && $this->getArg('apiKey')
         ) {
             $property = $this->properties['dcterms']['title'];
-            $omekaItem['o:media'][] = [
+            $oMedia = [
                 'o:ingester' => 'url',
                 'o:source'   => $this->url->itemFile($zoteroItem['key']),
                 'ingest_url' => $this->url->itemFile(
@@ -1156,6 +1179,22 @@ class Import extends AbstractJob
                     ],
                 ],
             ];
+            //vérifie si le pdf a des annotations
+            if($zoteroItem['data']['contentType']=='application/pdf' && isset($zoteroItem['meta']['numChildren'])){
+                $urlItemChild = $this->url->itemChild($zoteroItem['key']);
+                $this->logger->info('mapAttachment : urlItemChild='.$urlItemChild);
+                $zItemOriChild = json_decode($this->getResponse($urlItemChild)->getBody(),true);
+                $pAnno = $this->properties['oa']['hasBody'];
+                $oMedia[$pAnno->term()] = [];                
+                foreach ($zItemOriChild as $zChildItem) {
+                    $oMedia[$pAnno->term()][] =                     [
+                        '@value' => json_encode($zChildItem["data"]),
+                        'property_id' => $pAnno->id(),
+                        'type' => 'literal',
+                    ];
+                }              
+            }
+            $omekaItem['o:media'][] = $oMedia;
         }
         return $omekaItem;
     }

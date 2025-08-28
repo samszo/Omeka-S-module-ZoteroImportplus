@@ -4,10 +4,11 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vs: <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
 @prefix o: <http://omeka.org/s/vocabs/o#> .
-@prefix jdc: <https://jardindesconnaissances.univ-paris8.fr/onto/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix ma: <http://www.w3.org/ns/ma-ont#>.
+@prefix jdc: <https://jardindesconnaissances.univ-paris8.fr/onto/jdc#> .
 
-<https://jardindesconnaissances.univ-paris8.fr/onto/> a owl:Ontology ;
+<https://jardindesconnaissances.univ-paris8.fr/onto/jdc#> a owl:Ontology ;
     dcterms:title "Jardin des connaissances" .
 
 jdc:SemanticPosition a rdfs:Class ;
@@ -35,8 +36,13 @@ jdc:Actant a rdfs:Class ;
     rdfs:domain o:Resource ;
     vs:term_status "experimental" .
 
-jdc:Doc a rdfs:Class ;
-    rdfs:label "Doc" ;
+jdc:Existence a rdfs:Class ;
+    rdfs:label "Existence" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+
+jdc:Physique a rdfs:Class ;
+    rdfs:label "Physique" ;
     rdfs:domain o:Resource ;
     vs:term_status "experimental" .
 
@@ -45,9 +51,16 @@ jdc:Rapport a rdfs:Class ;
     rdfs:domain o:Resource ;
     vs:term_status "experimental" .
 
+jdc:Archetype a rdfs:Class ;
+    rdfs:label "Archetype" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+
+
 jdc:Concept a rdfs:Class ;
     rdfs:label "Concept" ;
     rdfs:domain o:Resource ;
+    owl:sameAs skos:Concept;
     vs:term_status "experimental" .
 
 jdc:x a rdf:Property ;
@@ -84,13 +97,18 @@ jdc:creationDate a rdf:Property ;
     rdfs:label "creationDate" ;
     rdfs:domain o:Resource .
 
+jdc:hasExistence a rdf:Property ;
+    rdfs:label "a comme existence" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+
 jdc:hasActant a rdf:Property ;
     rdfs:label "a comme actant" ;
     rdfs:domain o:Resource ;
     vs:term_status "experimental" .
 
-jdc:hasDoc a rdf:Property ;
-    rdfs:label "a comme document" ;
+jdc:hasPhysique a rdf:Property ;
+    rdfs:label "a comme physique" ;
     rdfs:domain o:Resource ;
     vs:term_status "experimental" .
 
@@ -143,4 +161,74 @@ jdc:hasCribleCarto a rdf:Property ;
     rdfs:label "a comme cartographie" ;
     rdfs:domain o:Resource ;
     vs:term_status "experimental" .
-    
+
+jdc:hasSujet a rdf:Property ;
+    rdfs:label "a comme sujet" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+jdc:hasObjet a rdf:Property ;
+    rdfs:label "a comme objet" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+jdc:hasPredicat a rdf:Property ;
+    rdfs:label "a comme prédicat" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+jdc:hasMenu a rdf:Property ;
+    rdfs:label "a comme menu" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+jdc:hasArchetype a rdf:Property ;
+    rdfs:label "a comme archetype" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+
+jdc:Transcription a rdfs:Class ;
+    rdfs:label "Transcription" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+
+jdc:iaModel a rdf:Property ;
+    rdfs:label "IA modèle" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+
+jdc:pipeline a rdf:Property ;
+    rdfs:label "pipeline" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+
+jdc:hasPerson a rdf:Property ;
+    rdfs:label "a comme personne" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+
+jdc:hasGeo a rdf:Property ;
+    rdfs:label "a comme lieu" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+
+jdc:hasEpoque a rdf:Property ;
+    rdfs:label "a comme époque" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+
+jdc:hasBook a rdf:Property ;
+    rdfs:label "a comme livre" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+
+jdc:hasMovie a rdf:Property ;
+    rdfs:label "a comme film" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+
+jdc:hasMusic a rdf:Property ;
+    rdfs:label "a comme musique" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .
+
+jdc:hasLink a rdf:Property ;
+    rdfs:label "a comme lien" ;
+    rdfs:domain o:Resource ;
+    vs:term_status "experimental" .

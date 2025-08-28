@@ -68,9 +68,33 @@ class Url
      */
     public function itemTags($zKey, array $params = [])
     {
-        return sprintf('%s/%s/%s/items/%s/tags%s', self::BASE, $this->type,
-            $this->id, $zKey, $this->getParams($params));
+        return sprintf('%s/%s/%s/items/%s/tags%s', self::BASE, $this->type, $this->id, $zKey, $this->getParams($params));
     }
+
+    /**
+     * The set of all item childs in the library
+     *
+     * @param string    $zKey
+     * @return string
+     */
+    public function itemChild($zKey)
+    {
+        return sprintf('%s/%s/%s/items/%s/children', self::BASE, $this->type,
+            $this->id, $zKey);
+    }
+
+     /**
+     * The set of all a search in the library
+     *
+     * @param array     $params
+     * @return string
+     */
+    public function itemSearch(array $params = [])
+    {
+        return sprintf('%s/%s/%s/items%s', self::BASE, $this->type, $this->id, $this->getParams($params));
+    }
+
+    //Fin ajout samszo
 
     /**
      * récupère l'identifiant de l'utilisateur
